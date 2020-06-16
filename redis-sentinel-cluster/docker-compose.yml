@@ -47,7 +47,7 @@ services:
 volumes:
   redis_master1_vol:
   redis_master2_vol:
-  redis_master1_log:
-  redis_master2_log:
+#  redis_master1_log:
+#  redis_master2_log:
 networks:
   redis_cluster:
