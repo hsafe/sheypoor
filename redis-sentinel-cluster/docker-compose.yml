@@ -7,7 +7,7 @@ services:
   redis_m1:
     build:
       context: ./build
-      dockerfile: Dockerfile_m1 
+      dockerfile: Dockerfile_m1
     container_name: redis_server_master1
     environment:
       - REDIS_REPLICATION_MODE=master
@@ -22,7 +22,7 @@ services:
     networks:
       - redis_cluster
   redis_m2:
-    build: 
+    build:
       context: ./build
       dockerfile: Dockerfile_m2
     container_name: redis_server_master2
@@ -44,6 +44,35 @@ services:
       - redis_cluster
     depends_on:
       - redis_m1
+  sentinel1:
+    build:
+      context: ./build
+      dockerfile: Dockerfile_sentinel
+    container_name: sentinel1
+    ports:
+      - "26379"
+    networks:
+      - redis_cluster
+  sentinel2:
+    build:
+      context: ./build
+      dockerfile: Dockerfile_sentinel
+    container_name: sentinel2
+    ports:
+      - "26379"
+    networks:
+      - redis_cluster
+  sentinel3:
+    build:
+      context: ./build
+      dockerfile: Dockerfile_sentinel
+    container_name: sentinel3
+    ports:
+      - "26379"
+    networks:
+      - redis_cluster
+
+
 volumes:
   redis_master1_vol:
   redis_master2_vol:
