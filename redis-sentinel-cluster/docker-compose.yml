@@ -1,0 +1,53 @@
+##Note! for purpuses of clustering and automatic discovery and communication explained in the redis.io this env only is responding to clients within the docker-overlay bridged network, that is to say either the host node needs to run haproxy on its edge or else one specific docker client like an alpine-php-cli for the case.
+#
+
+version: '3'
+
+services:
+  redis_m1:
+    build:
+      context: ./build
+      dockerfile: Dockerfile_m1 
+    container_name: redis_server_master1
+    environment:
+      - REDIS_REPLICATION_MODE=master
+      - ALLOW_EMPTY_PASSWORD=yes
+    ports:
+      - "6379"
+    volumes:
+      - "redis_master1_vol:/data:rw"
+#      - "redis_master1_log/redis.log:/var/log/redis/redis.log:rw"
+#      - "./redis_m1.conf:/usr/local/etc/redis/redis.conf:rw"
+    command: "redis-server /usr/local/etc/redis/redis.conf"
+    networks:
+      - redis_cluster
+  redis_m2:
+    build: 
+      context: ./build
+      dockerfile: Dockerfile_m2
+    container_name: redis_server_master2
+    environment:
+      - REDIS_MASTER_HOST=redis_server_master1
+      - REDIS_REPLICATION_MODE=slave
+      - ALLOW_EMPTY_PASSWORD=yes
+#    deploy:
+#      mode: replicated
+#      replicas: 2
+    ports:
+      - "6379"
+    volumes:
+      - "redis_master2_vol:/data:rw"
+#      - "redis_master2_log/redis.log:/var/log/redis/redis.log:rw"
+#      - "./redis_m2.conf:/usr/local/etc/redis/redis.conf:rw"
+    command: "redis-server /usr/local/etc/redis/redis.conf"
+    networks:
+      - redis_cluster
+    depends_on:
+      - redis_m1
+volumes:
+  redis_master1_vol:
+  redis_master2_vol:
+  redis_master1_log:
+  redis_master2_log:
+networks:
+  redis_cluster:
